@@ -28,6 +28,7 @@ class Colour(ColourMeta):
     value a number in increasing order.
     """
 
+    UNDEFINED = auto()
     WHITE = auto()
     YELLOW = auto()
     RED = auto()
