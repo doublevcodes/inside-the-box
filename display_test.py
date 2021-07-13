@@ -1,4 +1,5 @@
 from math import ceil, floor
+from typing import List
 scale_unit = 1
 unit_width = scale_unit * 5
 unit_height = scale_unit * 2
@@ -7,16 +8,17 @@ display_height = unit_height * 9 + 10
 display_width = unit_width * 9 + 10
 
 
-def print_display(display):
+def print_display(display: List) -> None:
     [print(display_line) for display_line in display]
 
 
-def replace_character(string, position, character):
+def replace_character(string: str, position: int, character: str) -> str:
     string = [character if i == position else string[i] for i in range(len(string))]
     return ''.join(string)
 
 
-def add_line(display, start_x, start_y, end_x, end_y, character, horizontal=True):
+def add_line(display: List, start_x: int, start_y: int, end_x: int, end_y: int,
+             character: str, horizontal: bool = True) -> None:
     if end_x == start_x:
         x = end_x
         for i in range(start_y, end_y + 1):
@@ -35,8 +37,9 @@ def add_line(display, start_x, start_y, end_x, end_y, character, horizontal=True
             display[y_best] = replace_character(display[y_best], i, character)
 
 
-def add_block(display, top_left_x, top_left_y, top_right_x, top_right_y,
-              bottom_left_x, bottom_left_y, bottom_right_x, bottom_right_y, character, horizontal=True):
+def add_block(display: List, top_left_x: int, top_left_y: int, top_right_x: int, top_right_y: int,
+              bottom_left_x: int, bottom_left_y: int, bottom_right_x: int, bottom_right_y: int,
+              character: str, horizontal: bool = True) -> None:
     if horizontal:
         # Determine affected rows
         ymin = min(top_left_y, top_right_y)
