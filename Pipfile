@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-blessed = "*"
+blessed = "~=1.18"
 
 [dev-packages]
 flake8 = "~=3.7"
