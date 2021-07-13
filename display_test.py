@@ -1,5 +1,6 @@
 from math import ceil, floor
 from typing import List
+
 scale_unit = 1
 unit_width = scale_unit * 5
 unit_height = scale_unit * 2
@@ -9,16 +10,20 @@ display_width = unit_width * 9 + 10
 
 
 def print_display(display: List) -> None:
+    """Prints a display (list of strings), can be used to e.g. colour specific characters"""
     [print(display_line) for display_line in display]
 
 
 def replace_character(string: str, position: int, character: str) -> str:
+    """Replaces a character in a string, returns changed string.
+       Python treats strings as lists but they are not mutable which is confusing."""
     string = [character if i == position else string[i] for i in range(len(string))]
     return ''.join(string)
 
 
 def add_line(display: List, start_x: int, start_y: int, end_x: int, end_y: int,
              character: str, horizontal: bool = True) -> None:
+    """Adds a line between two points in a display."""
     if end_x == start_x:
         x = end_x
         for i in range(start_y, end_y + 1):
@@ -40,6 +45,7 @@ def add_line(display: List, start_x: int, start_y: int, end_x: int, end_y: int,
 def add_block(display: List, top_left_x: int, top_left_y: int, top_right_x: int, top_right_y: int,
               bottom_left_x: int, bottom_left_y: int, bottom_right_x: int, bottom_right_y: int,
               character: str, horizontal: bool = True) -> None:
+    """Adds a quadrilateral in a display."""
     if horizontal:
         # Determine affected rows
         ymin = min(top_left_y, top_right_y)
