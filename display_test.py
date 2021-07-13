@@ -16,7 +16,9 @@ def print_display(display: List) -> None:
 
 def replace_character(string: str, position: int, character: str) -> str:
     """Replaces a character in a string, returns changed string.
-       Python treats strings as lists but they are not mutable which is confusing."""
+
+    Python treats strings as lists but they are not mutable which is confusing.
+    """
     string = [character if i == position else string[i] for i in range(len(string))]
     return ''.join(string)
 
