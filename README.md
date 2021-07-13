@@ -22,6 +22,9 @@ Here is a quick rundown of what each file in this repository contains:
 
 Each of these files have comments for you to understand easily, and modify to fit your needs.
 
+Maintain requirements.txt as a list of required packages for install by pip
+Use `pip install -r requirements.txt` to install all required packages.
+
 ### flake8: general style rules
 
 Our first and probably most important tool is flake8. It will run a set of plugins on your codebase and warn you about any non-conforming lines.
