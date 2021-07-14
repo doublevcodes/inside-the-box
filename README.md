@@ -22,6 +22,9 @@ Here is a quick rundown of what each file in this repository contains:
 
 Each of these files have comments for you to understand easily, and modify to fit your needs.
 
+Maintain requirements.txt as a list of required packages for install by pip
+Use `pip install -r requirements.txt` to install all required packages.
+
 ### flake8: general style rules
 
 Our first and probably most important tool is flake8. It will run a set of plugins on your codebase and warn you about any non-conforming lines.
@@ -55,7 +58,7 @@ It is run by calling `flake8` in the project root.
 
 - `flake8-annotations`: Checks your code for the presence of [type-hints](https://docs.python.org/3/library/typing.html).
 - `flake8-bandit`: Checks for common security breaches.
-- `flake8-docstring`: Checks that you properly documented your code.
+- `flake8-docstrings`: Checks that you properly documented your code.
 - `flake8-isort`: Makes sure you ran ISort on the project.
 
 ### ISort: automatic import sorting
