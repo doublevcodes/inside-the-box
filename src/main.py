@@ -1,7 +1,7 @@
 import os
 from collections import namedtuple
 from configparser import ConfigParser
-from typing import Union
+from typing import Optional
 
 from blessed import Terminal, keyboard
 
@@ -69,7 +69,7 @@ class Application:
         self.commands = []
 
     @staticmethod
-    def hex_to_rgb(colour_string: str) -> Union[tuple, None]:
+    def hex_to_rgb(colour_string: str) -> Optional[tuple]:
         """Return a tuple of rgb values, or None if the hex string is invalid."""
         colour_string.lstrip('#')
         try:
