@@ -1,12 +1,21 @@
 import os
 from collections import namedtuple
 from configparser import ConfigParser
+from enum import Enum, auto
 from pathlib import Path
 from typing import Optional
 
 from blessed import Terminal, keyboard
 
 SOFTWARE_NAME = "Terminal Rubik's Cube"
+
+
+class Actions(Enum):
+    """Enum to store control actions."""
+
+    ORBIT = auto()
+    ROTATE = auto()
+    VIEW = auto()
 
 
 class Application:
@@ -32,19 +41,19 @@ class Application:
 
         control = namedtuple("Control", "action param")
         key_groups = {
-            "orbit_left": control("orbit", "left"),
-            "orbit_right": control("orbit", "right"),
-            "orbit_up": control("orbit", "up"),
-            "orbit_down": control("orbit", "down"),
-            "switch_view": control("view", "switch"),
-            "front": control("rotate", "front"),
-            "back": control("rotate", "back"),
-            "top": control("rotate", "top"),
-            "bottom": control("rotate", "bottom"),
-            "left": control("rotate", "left"),
-            "right": control("rotate", "right"),
-            "anti_clockwise": control("rotate", "anti_clockwise"),
-            "one_eighty": control("rotate", "one_eighty")
+            "orbit_left": control(Actions.ORBIT, "left"),
+            "orbit_right": control(Actions.ORBIT, "right"),
+            "orbit_up": control(Actions.ORBIT, "up"),
+            "orbit_down": control(Actions.ORBIT, "down"),
+            "switch_view": control(Actions.VIEW, "switch"),
+            "front": control(Actions.ROTATE, "front"),
+            "back": control(Actions.ROTATE, "back"),
+            "top": control(Actions.ROTATE, "top"),
+            "bottom": control(Actions.ROTATE, "bottom"),
+            "left": control(Actions.ROTATE, "left"),
+            "right": control(Actions.ROTATE, "right"),
+            "anti_clockwise": control(Actions.ROTATE, "anti_clockwise"),
+            "one_eighty": control(Actions.ROTATE, "one_eighty")
         }
 
         # re-map commands from control=key to {key: control} for every defined control
@@ -131,14 +140,14 @@ class Application:
                     # if the key is contained within the key map, fetch the associated action and execute it
                     if (key := str(val.code or val)) in self.keymap.keys():
                         action = self.keymap[key]
-                        if action.action == "orbit":
+                        if action.action == Actions.ORBIT:
                             pass  # change view angle here
-                        elif action.action == "rotate":
+                        elif action.action == Actions.ROTATE:
                             self.commands.append(action.param)
                             if self.config["controls"]["input_type"] == "auto":  # see config for input type details
                                 force = self.config["controls"].getboolean("do_instant")
                                 self.try_execute(force=force)
-                        elif action.action == "view":
+                        elif action.action == Actions.VIEW:
                             pass  # toggle view between inside and outside here
                     elif val.is_sequence and val.code == 343:
                         self.try_execute(force=True)
