@@ -1,6 +1,7 @@
 import os
 from collections import namedtuple
 from configparser import ConfigParser
+from pathlib import Path
 from typing import Optional
 
 from blessed import Terminal, keyboard
@@ -15,23 +16,22 @@ class Application:
         """Initialise variables such as the terminal and load configuration data."""
         # get config path and make it if it doesn't exist
         self.config = ConfigParser()
-        self.config_path = os.path.join(
+        self.config_path = Path(
             os.environ.get("APPDATA")
             or os.environ.get("XDG_CONFIG_HOME")
-            or os.path.join(os.environ.get("HOME"), ".config"),
-            SOFTWARE_NAME
-        )
-        os.makedirs(self.config_path, exist_ok=True)
-        self.config_path = os.path.join(self.config_path, "config.ini")
+            or (Path(os.environ.get("HOME")) / ".config")
+        ) / SOFTWARE_NAME
+        self.config_path.mkdir(parents=True, exist_ok=True)
+        self.config_path /= "config.ini"
 
         # load default config then override with user config (if defined)
         # invalid values entered in the config will be ignored
         self.config.read("default_config.ini")
-        if os.path.exists(self.config_path):
+        if self.config_path.exists():
             self.config.read(self.config_path)
 
         control = namedtuple("Control", "action param")
-        key_groups = {  # maybe use enum instead?
+        key_groups = {
             "orbit_left": control("orbit", "left"),
             "orbit_right": control("orbit", "right"),
             "orbit_up": control("orbit", "up"),
