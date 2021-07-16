@@ -1,8 +1,10 @@
 from enum import Enum, auto
 from typing import Any
+
 from blessed import Terminal
 
 term = Terminal()
+
 
 class ColourMeta(Enum):
     """
@@ -32,11 +34,8 @@ class Colour(ColourMeta):
 
     UNDEFINED = auto()
     WHITE = term.on_white
-    YELLOW = term.on_yellow 
-    RED = term.on_red 
+    YELLOW = term.on_yellow
+    RED = term.on_red
     INDIGO = term.on_indigo
     BLUE = term.on_blue
     GREEN = term.on_green
-
-
-
