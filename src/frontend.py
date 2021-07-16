@@ -6,35 +6,40 @@ from cube.colour import Colour
 
 term = Terminal()
 
+# To run in your terminal call
+# three_dimensional_view(face_colors)
+
+
+# change value of SQ_HEIGHT to change the value of square
 SQ_HEIGHT = 2
 SQ_WIDTH = SQ_HEIGHT * 2 + int(SQ_HEIGHT / 2)
 TOTAL_HEIGHT = 3 * SQ_HEIGHT
 TOTAL_WIDTH = 3 * SQ_WIDTH
 
 #  middle top face - top middle frame
-color_list = [Colour.WHITE, Colour.YELLOW, Colour.RED,
-              Colour.INDIGO, Colour.WHITE, Colour.GREEN,
-              Colour.BLUE, Colour.YELLOW, Colour.RED]
+color_list = [Colour.WHITE, Colour.WHITE, Colour.WHITE,
+              Colour.RED, Colour.INDIGO, Colour.BLUE,
+              Colour.YELLOW, Colour.YELLOW, Colour.YELLOW]
 
 #  middle face
-color_list2 = [Colour.WHITE, Colour.YELLOW, Colour.RED,
-               Colour.INDIGO, Colour.WHITE, Colour.GREEN,
-               Colour.BLUE, Colour.YELLOW, Colour.RED]
+color_list2 = [Colour.GREEN, Colour.GREEN, Colour.GREEN,
+               Colour.YELLOW, Colour.YELLOW, Colour.BLUE,
+               Colour.RED, Colour.RED, Colour.RED]
 
 #  middle bot face
-color_list3 = [Colour.WHITE, Colour.YELLOW, Colour.RED,
-               Colour.INDIGO, Colour.WHITE, Colour.GREEN,
-               Colour.BLUE, Colour.YELLOW, Colour.RED]
+color_list3 = [Colour.GREEN, Colour.GREEN, Colour.GREEN,
+               Colour.YELLOW, Colour.YELLOW, Colour.YELLOW,
+               Colour.WHITE, Colour.WHITE, Colour.WHITE]
 
 #  left face
-color_list4 = [Colour.WHITE, Colour.YELLOW, Colour.RED,
-               Colour.INDIGO, Colour.WHITE, Colour.GREEN,
-               Colour.BLUE, Colour.YELLOW, Colour.RED]
+color_list4 = [Colour.YELLOW, Colour.INDIGO, Colour.WHITE,
+               Colour.RED, Colour.RED, Colour.RED,
+               Colour.YELLOW, Colour.INDIGO, Colour.WHITE]
 
 #  right face
-color_list5 = [Colour.WHITE, Colour.YELLOW, Colour.RED,
-               Colour.INDIGO, Colour.WHITE, Colour.GREEN,
-               Colour.BLUE, Colour.YELLOW, Colour.RED]
+color_list5 = [Colour.GREEN, Colour.INDIGO, Colour.GREEN,
+               Colour.RED, Colour.INDIGO, Colour.GREEN,
+               Colour.BLUE, Colour.INDIGO, Colour.GREEN]
 
 
 face_colors = []
@@ -44,10 +49,8 @@ face_colors.append(color_list3)
 face_colors.append(color_list4)
 face_colors.append(color_list5)
 
-print(face_colors[2][0])
 
-
-def horizontal_grid_lines(face_colors: List) -> None:
+def three_dimensional_view(face_colors: List) -> None:
     """Takes List of list of colors as parameter
 
     List of colors should contain faces in order
@@ -88,20 +91,32 @@ def horizontal_grid_lines(face_colors: List) -> None:
 
         if (i % top_grid_check != 0):
             if (number_of_spaces_before - 1 > v_indexes[0] and number_of_spaces_before - 1 < v_indexes[1]):
-                print(face_colors[3][0].value("w" * (number_of_spaces_before - 1)), end="")
+                print(face_colors[3][0].value(" " * (number_of_spaces_before - 1)), end="")
             elif (number_of_spaces_before - 1 > v_indexes[1] and number_of_spaces_before - 1 < v_indexes[2]):
                 # print(v_indexes[1], end="")
-                print(face_colors[3][0].value("a" * (v_indexes[1]-1)), end="")
+                print(face_colors[3][0].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print(face_colors[3][1].value("s" * (number_of_spaces_before - v_indexes[1] - 1)), end="")
+                print(face_colors[3][1].value(" " * (number_of_spaces_before - v_indexes[1] - 1)), end="")
             else:
-                print(face_colors[3][0].value("d" * (v_indexes[1]-1)), end="")
+                print(face_colors[3][0].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print(face_colors[3][1].value("e" * (v_indexes[1]-1)), end="")
+                print(face_colors[3][1].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print(face_colors[3][2].value("f" * (number_of_spaces_before - v_indexes[2] - 1)), end="")
+                print(face_colors[3][2].value(" " * (number_of_spaces_before - v_indexes[2] - 1)), end="")
         else:
-            print("-" * (number_of_spaces_before - 1), end="")
+            # print("-" * (number_of_spaces_before - 1), end="")
+            if (i % (SQ_HEIGHT + 1) == 0):
+                # print("-" * (number_of_spaces_before - 1), end="")
+                if i == (SQ_HEIGHT + 1):
+                    print(face_colors[3][0].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                    print("|", end="")
+                    print(face_colors[3][1].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                elif i == (SQ_HEIGHT + 1) * 2:
+                    print(face_colors[3][0].value(" " * (number_of_spaces_before - 1)), end="")
+                else:
+                    # should never reach this point but if it does
+                    print("-" * (number_of_spaces_before - 1), end="")
+                    # print(i,end="")
 
         # code for blank lines, will be inside the \||/ only
         if (i % top_grid_check == 0):
@@ -147,20 +162,31 @@ def horizontal_grid_lines(face_colors: List) -> None:
 
         if (i % top_grid_check != 0):
             if (number_of_spaces_before - 1 > v_indexes[0] and number_of_spaces_before - 1 < v_indexes[1]):
-                print("w" * (number_of_spaces_before - 1), end="")
+                print(face_colors[4][2].value(" " * (number_of_spaces_before - 1)), end="")
             elif (number_of_spaces_before - 1 > v_indexes[1] and number_of_spaces_before - 1 < v_indexes[2]):
                 # print(v_indexes[1], end="")
-                print("a" * (number_of_spaces_before - v_indexes[1] - 1), end="")
+                print(face_colors[4][1].value(" " * (number_of_spaces_before - v_indexes[1] - 1)), end="")
                 print("|", end="")
-                print("s" * (v_indexes[1]-1), end="")
+                print(face_colors[4][2].value(" " * (v_indexes[1]-1)), end="")
             else:
-                print("d" * (number_of_spaces_before - v_indexes[2] - 1), end="")
+                print(face_colors[4][0].value(" " * (number_of_spaces_before - v_indexes[2] - 1)), end="")
                 print("|", end="")
-                print("e" * (v_indexes[1]-1), end="")
+                print(face_colors[4][1].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print("f" * (v_indexes[1]-1), end="")
+                print(face_colors[4][2].value(" " * (v_indexes[1]-1)), end="")
         else:
-            print("-" * (number_of_spaces_before - 1), end="")
+            # print("6" * (number_of_spaces_before - 1), end="")
+            if (i % (SQ_HEIGHT + 1) == 0):
+                # print("-" * (number_of_spaces_before - 1), end="")
+                if i == (SQ_HEIGHT + 1):
+                    print(face_colors[4][1].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                    print("|", end="")
+                    print(face_colors[4][2].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                elif i == (SQ_HEIGHT + 1) * 2:
+                    print(face_colors[4][2].value(" " * (number_of_spaces_before - 1)), end="")
+                else:
+                    # should never reach this point but if it does
+                    print("-" * (number_of_spaces_before - 1), end="")
 
         if (number_of_spaces_before != 0):
             print("|", end="")
@@ -229,20 +255,14 @@ def horizontal_grid_lines(face_colors: List) -> None:
                 if (num != 0):
                     width_indexes[h][num] += 1
 
-    '''print("MAJOR VARIABLES")
-    print("number_of_spaces_before" + str(number_of_spaces_before))
-    print("diagonal_height" + str(diagonal_height))
-    print("diagonal_segment" + str(diagonal_segment))
-    print("total_width_of_whole" + str(total_width_of_whole))
-    print("singe_face_vertical" + str(singe_face_vertical))
-    '''
     # ACTUAL MIDDLE LOOP
     for i in range(0, height_of_middle_view):
 
         # space padding before middle
         number_of_spaces_before = int(((total_width_of_whole-4) - (SQ_WIDTH)*3)/2)
         # print(int((number_of_spaces_before -3)), end="")
-
+        before_middle_begins = int((number_of_spaces_before - 3)) + 2
+        # print(before_middle_begins)
         print("|", end="")
         before_middle_begins = int((number_of_spaces_before - 3)) + 2
         singe_face_vertical = int((number_of_spaces_before - 3) / 3)
@@ -261,17 +281,40 @@ def horizontal_grid_lines(face_colors: List) -> None:
                         print("-", end="")
                 else:
                     if (j > width_indexes[i][1]):
-                        print("a", end="")
+                        if width_indexes[i][1] == -1:
+                            if (j < singe_face_vertical):
+                                print(face_colors[3][3].value(" "), end="")
+                            elif j < singe_face_vertical*2 + 1:
+                                print(face_colors[3][4].value(" "), end="")
+                            else:
+                                print(face_colors[3][5].value(" "), end="")
+                        else:
+                            ## NEED HEIGHT /2 logic and then if else logic
+                            if i > int(height_of_middle_view/2):
+                                if (j < singe_face_vertical):
+                                    print(face_colors[3][6].value(" "), end="")
+                                elif j < singe_face_vertical*2 + 1:
+                                    print(face_colors[3][7].value(" "), end="")
+                                else:
+                                    print(face_colors[3][8].value(" "), end="")
+                                # print("k",end="")
+                            else:
+                                if (j < singe_face_vertical):
+                                    print(face_colors[3][0].value(" "), end="")
+                                elif j < singe_face_vertical*2 + 1:
+                                    print(face_colors[3][1].value(" "), end="")
+                                else:
+                                    print(face_colors[3][2].value(" "), end="")
+                                # print("o",end="")
+                            # print("g", end="")
                     else:
-                        print("b", end="")
-
-        '''# vertical bars middle section before face
-        print("|", end="")
-        print("a" * int((number_of_spaces_before -3)/3), end="")
-        print("|", end="")
-        print("a" * int((number_of_spaces_before -3)/3), end="")
-        print("|", end="")
-        print("a" * int((number_of_spaces_before -3)/3), end="")'''
+                        if (j < singe_face_vertical):
+                            print(face_colors[3][3].value(" "), end="")
+                        elif j < singe_face_vertical*2 + 1:
+                            print(face_colors[3][4].value(" "), end="")
+                        else:
+                            print(face_colors[3][5].value(" "), end="")
+                        # print("b", end="")
 
         # code for blank lines, will be inside the |||| only
         if (i % top_grid_check == 0):
@@ -327,20 +370,49 @@ def horizontal_grid_lines(face_colors: List) -> None:
                         print("-", end="")
                 else:
                     if (j > width_right_indexes[i][1]):
-                        print("a", end="")
+                        if (width_right_indexes[i][1] == -1):
+                            if (j < singe_face_vertical):
+                                print(face_colors[4][3].value(" "), end="")
+                            elif j < singe_face_vertical*2 + 1:
+                                print(face_colors[4][4].value(" "), end="")
+                            else:
+                                print(face_colors[4][5].value(" "), end="")
+                            # print("2",end="")
+                        else:
+                            if i > int(height_of_middle_view/2):
+                                if (j < singe_face_vertical):
+                                    print(face_colors[4][3].value(" "), end="")
+                                elif j < singe_face_vertical*2 + 1:
+                                    print(face_colors[4][4].value(" "), end="")
+                                else:
+                                    print(face_colors[4][5].value(" "), end="")
+                                # print("k",end="")
+                            else:
+                                if (j < singe_face_vertical):
+                                    print(face_colors[4][3].value(" "), end="")
+                                elif j < singe_face_vertical*2 + 1:
+                                    print(face_colors[4][4].value(" "), end="")
+                                else:
+                                    print(face_colors[4][5].value(" "), end="")
+                            # print("x", end="")
                     else:
-                        print("b", end="")
+                        if i > int(height_of_middle_view/2):
+                            if (j < singe_face_vertical):
+                                print(face_colors[4][6].value(" "), end="")
+                            elif j < singe_face_vertical*2 + 1:
+                                print(face_colors[4][7].value(" "), end="")
+                            else:
+                                print(face_colors[4][8].value(" "), end="")
+                            # print("k",end="")
+                        else:
+                            if (j < singe_face_vertical):
+                                print(face_colors[4][0].value(" "), end="")
+                            elif j < singe_face_vertical*2 + 1:
+                                print(face_colors[4][1].value(" "), end="")
+                            else:
+                                print(face_colors[4][2].value(" "), end="")
 
-        '''
-        # space padding after middle
-        print("a" * int((number_of_spaces_before -3)/3), end="")
-        print("|", end="")
-        print("a" * int((number_of_spaces_before -3)/3), end="")
-        print("|", end="")
-        print("a" * int((number_of_spaces_before -3)/3), end="")
-        print("|", end="")
-        print()
-        '''
+                            # print("y", end="")
         print("|", end="")
         print()
     # ------------------------------------------------------------
@@ -359,20 +431,31 @@ def horizontal_grid_lines(face_colors: List) -> None:
         # print("z" * (number_of_spaces_before - 1), end="")
         if (i % top_grid_check != 0):
             if (number_of_spaces_before - 1 > v_indexes[0] and number_of_spaces_before - 1 < v_indexes[1]):
-                print("w" * (number_of_spaces_before - 1), end="")
+                print(face_colors[3][6].value(" " * (number_of_spaces_before - 1)), end="")
             elif (number_of_spaces_before - 1 > v_indexes[1] and number_of_spaces_before - 1 < v_indexes[2]):
                 # print(v_indexes[1], end="")
-                print("a" * (v_indexes[1]-1), end="")
+                print(face_colors[3][6].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print("s" * (number_of_spaces_before - v_indexes[1] - 1), end="")
+                print(face_colors[3][7].value(" " * (number_of_spaces_before - v_indexes[1] - 1)), end="")
             else:
-                print("d" * (v_indexes[1]-1), end="")
+                print(face_colors[3][6].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print("e" * (v_indexes[1]-1), end="")
+                print(face_colors[3][7].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print("f" * (number_of_spaces_before - v_indexes[2] - 1), end="")
+                print(face_colors[3][8].value(" " * (number_of_spaces_before - v_indexes[2] - 1)), end="")
         else:
-            print("-" * (number_of_spaces_before - 1), end="")
+            # print("8" * (number_of_spaces_before - 1), end="")
+            if (i % (SQ_HEIGHT + 1) == 0):
+                # print("-" * (number_of_spaces_before - 1), end="")
+                if i == (SQ_HEIGHT + 1):
+                    print(face_colors[3][6].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                    print("|", end="")
+                    print(face_colors[3][7].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                elif i == (SQ_HEIGHT + 1) * 2:
+                    print(face_colors[3][6].value(" " * (number_of_spaces_before - 1)), end="")
+                else:
+                    # should never reach this point but if it does
+                    print("-" * (number_of_spaces_before - 1), end="")
 
         # print(number_of_spaces_before)
 
@@ -417,24 +500,32 @@ def horizontal_grid_lines(face_colors: List) -> None:
         # vertical bars at the top right section
         if (i % top_grid_check != 0):
             if (number_of_spaces_before - 1 > v_indexes[0] and number_of_spaces_before - 1 < v_indexes[1]):
-                print("w" * (number_of_spaces_before - 1), end="")
+                print(face_colors[4][8].value(" " * (number_of_spaces_before - 1)), end="")
             elif (number_of_spaces_before - 1 > v_indexes[1] and number_of_spaces_before - 1 < v_indexes[2]):
                 # print(v_indexes[1], end="")
-                print("a" * (number_of_spaces_before - v_indexes[1] - 1), end="")
+                print(face_colors[4][7].value(" " * (number_of_spaces_before - v_indexes[1] - 1)), end="")
                 print("|", end="")
-                print("s" * (v_indexes[1]-1), end="")
+                print(face_colors[4][8].value(" " * (v_indexes[1]-1)), end="")
             else:
-                print("d" * (number_of_spaces_before - v_indexes[2] - 1), end="")
+                print(face_colors[4][6].value(" " * (number_of_spaces_before - v_indexes[2] - 1)), end="")
                 print("|", end="")
-                print("e" * (v_indexes[1]-1), end="")
+                print(face_colors[4][7].value(" " * (v_indexes[1]-1)), end="")
                 print("|", end="")
-                print("f" * (v_indexes[1]-1), end="")
+                print(face_colors[4][8].value(" " * (v_indexes[1]-1)), end="")
         else:
-            print("-" * (number_of_spaces_before - 1), end="")
+            # print("-" * (number_of_spaces_before - 1), end="")
+            if (i % (SQ_HEIGHT + 1) == 0):
+                # print("-" * (number_of_spaces_before - 1), end="")
+                if i == (SQ_HEIGHT + 1):
+                    print(face_colors[4][7].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                    print("|", end="")
+                    print(face_colors[4][8].value(" " * int((number_of_spaces_before - 1)/2)), end="")
+                elif i == (SQ_HEIGHT + 1) * 2:
+                    print(face_colors[4][8].value(" " * (number_of_spaces_before - 1)), end="")
+                else:
+                    # should never reach this point but if it does
+                    print("-" * (number_of_spaces_before - 1), end="")
 
         if (number_of_spaces_before != 0):
             print("|", end="")
         print()
-
-
-horizontal_grid_lines(face_colors)
