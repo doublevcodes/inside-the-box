@@ -7,6 +7,8 @@ from typing import Optional
 
 from blessed import Terminal, keyboard
 
+from cube import Cube
+
 SOFTWARE_NAME = "Terminal Rubik's Cube"
 
 
@@ -46,8 +48,8 @@ class Application:
             "orbit_down": control(Actions.ORBIT, "down"),
             "front": control(Actions.ROTATE, "front"),
             "back": control(Actions.ROTATE, "back"),
-            "top": control(Actions.ROTATE, "top"),
-            "bottom": control(Actions.ROTATE, "bottom"),
+            "top": control(Actions.ROTATE, "up"),
+            "bottom": control(Actions.ROTATE, "down"),
             "left": control(Actions.ROTATE, "left"),
             "right": control(Actions.ROTATE, "right"),
             "anti_clockwise": control(Actions.ROTATE, "anti_clockwise"),
@@ -59,10 +61,8 @@ class Application:
         self.keymap = {}
         config_controls = self.config["controls"]
         for k, v in key_groups.items():
-            for key in config_controls[k].split('¦'):
+            for key in config_controls[k].split('|'):
                 self.keymap[key] = v
-
-        # initialise cube from config here i.e. self.cube = Cube.from_config(...) or similar
 
         # set up terminal, clear screen and set colours to specified values in config
         self.term = Terminal()
@@ -73,64 +73,88 @@ class Application:
             print(self.term.on_color_rgb(*rgb_colour))
         print(self.term.clear)
 
-        self.commands = []
+        # initialise cube from config, defaulting to black if a colour is invalid
+        self.cube = Cube(tuple(self.term.on_color_rgb(*(self.hex_to_rgb(self.config["colours"][str(i)]) or (0, 0, 0)))
+                               for i in range(6)))  # todo load from config (status)
+
+        self.last_command = ''
+        self.parsed = []
+        self.command_string_lookup = {"front": 'F', "back": 'B', "left": 'L', "right": 'R', "up": 'U', "down": 'D',
+                                      "one_eighty": '2', 'anti_clockwise': "'", '': ''}
+        self.modifiers = ("anti_clockwise", "one_eighty", '')  # the empty strings are for the initial value
 
     @staticmethod
     def hex_to_rgb(colour_string: str) -> Optional[tuple]:
         """Return a tuple of rgb values, or None if the hex string is invalid."""
-        colour_string.lstrip('#')
+        colour_string = colour_string.lstrip('#')
         try:
             rgb = tuple(int(colour_string[i:i+2], 16) for i in (0, 2, 4))
             return rgb
         except ValueError:
             return None
 
+    def commands_as_string(self) -> str:
+        """Return a string representation of the current list of commands."""
+        # a better way to do this (and controls in general) would be to use enums for actions and parameters, however
+        # due to time constraints, I am going to leave it at this rather than refactoring now
+        output = ""
+        for command in self.parsed:
+            output += self.command_string_lookup[command.face]
+            if command.modifier:
+                output += self.command_string_lookup[command.modifier]
+        output += f"({self.command_string_lookup['' if self.last_command in self.modifiers else self.last_command]})"
+        return output
+
     def on_exit(self) -> None:
         """Shut down gracefully and save the config."""
         print(self.term.normal)
-        # update cube in config here i.e. call function on cube to get it in this format, and set config key
+        # todo update cube in config here i.e. call function on cube to get it in this format, and set config key
         with open(self.config_path, "w") as f:
             self.config.write(f)
 
+    def draw(self, string: str, x: int, y: int) -> None:
+        """Draw a multiline string @ (x, y) on the screen without disrupting other parts of the screen."""
+        for row, line in enumerate(string.split('\n')):
+            print(f"{self.term.move_xy(x, y + row)}{line}")
+
     def update_screen(self) -> None:
         """Update the screen with the new data."""
-        # draw cube here
-        # draw current commands here
-        pass
+        print(self.term.clear)
+        # draw cube todo use config height or get terminal height
+        self.draw(self.cube.render(2), 2, 2)
+        # clear line then draw current commands
+        print(f"{self.term.home}{self.term.clear_eol}{self.term.home}{self.commands_as_string()}")
 
-    def try_execute(self, *, force: bool = False) -> None:
-        """Try to execute the current commands."""
-        # parse the commands
-        parsed = []
+    def try_parse(self, action: str, *, force: bool = False) -> None:
+        """Try to parse the current commands."""
+        # parsing could be improved by using enums and making 'command' static if we have time
         command = namedtuple("Command", "face modifier")
-        modifiers = ("anti_clockwise", "one_eighty")
-        for i, action in enumerate(self.commands):
-            if action in modifiers:
-                # modifiers are caught by the previous action, so skip them
-                # this does, however, mean multiple modifiers in a row are ignored
-                continue
-            elif i == len(self.commands) - 1:
-                # only process an ambiguous last command if force is true
-                if force:
-                    parsed.append(command(action, None))
-            elif self.commands[i + 1] not in modifiers:
-                parsed.append(command(action, None))
+
+        # parse the commands
+        if force:
+            # if we are forcing it, we don't care what the last action is, and modifiers don't matter
+            if action not in self.modifiers:
+                self.parsed.append(command(action, None))
+        elif self.last_command not in self.modifiers:
+            # if the last action is a face (and force is false), we are either adding a face or a modified face
+            if action in self.modifiers:
+                self.parsed.append(command(self.last_command, action))
             else:
-                # if there's a modifier after it, add it with the modifier as well
-                parsed.append(command(action, self.commands[i + 1]))
+                self.parsed.append(command(self.last_command, None))
+
+        self.last_command = action
+
+    def execute_commands(self) -> None:
+        """Execute the current commands."""
+        for command in self.parsed:
+            pass  # call cube's rotate/twist function here with modifier or resolve the modifier if necessary
 
         # remove executed commands
-        if force or self.commands[-1] in modifiers:
-            self.commands = []
-        else:
-            self.commands = [self.commands[-1]]
-
-        for command in parsed:
-            pass  # call cube's rotate/twist function here with modifier or resolve the modifier if necessary
+        self.parsed = []
 
     def run(self) -> None:
         """Run the main loop, handling key presses and rendering the scene."""
-        with self.term.fullscreen(), self.term.cbreak():
+        with self.term.fullscreen(), self.term.cbreak(), self.term.hidden_cursor():
             val = keyboard.Keystroke()
             # keep running until q or esc is pressed, or a keyboard interrupt is received
             try:
@@ -141,12 +165,17 @@ class Application:
                         if action.action == Actions.ORBIT:
                             pass  # change view angle here
                         elif action.action == Actions.ROTATE:
-                            self.commands.append(action.param)
+                            # if there is time, refactoring the control scheme to accept combos for modifiers would be
+                            # good, e.g. SHIFT + FACE = ANTI CLOCKWISE etc.
                             if self.config["controls"]["input_type"] == "auto":  # see config for input type details
                                 force = self.config["controls"].getboolean("do_instant")
-                                self.try_execute(force=force)
+                                self.try_parse(action.param, force=force)
+                                self.execute_commands()
+                            else:
+                                self.try_parse(action.param)
                     elif val.is_sequence and val.code == 343:
-                        self.try_execute(force=True)
+                        self.execute_commands()
+                    # if we have time, adding backspace to remove a command or undo would be useful
 
                     self.update_screen()
                     val = self.term.inkey()
@@ -156,4 +185,4 @@ class Application:
 
 
 if __name__ == "__main__":
-    Application().run()
+    Application().run()  # todo use arg parse to provide help, plus add option to clear config
