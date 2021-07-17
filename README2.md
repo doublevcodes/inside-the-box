@@ -1,8 +1,11 @@
-# Inside the box - Python Discord Code Jam 2021
+# Python Discord Code Jam 8 (Summer 2021)
+
+Theme: Think Inside the Box
 
 ## Project Details
-We are "inside" the box, Rubick's cube to be exact.
+
+We are "inside" the box, Rubik's cube to be exact.
 
 ## What does this mean?
 
-More details to be added later... 
+More details to be added later...
