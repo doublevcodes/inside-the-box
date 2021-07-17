@@ -15,7 +15,6 @@ class Actions(Enum):
 
     ORBIT = auto()
     ROTATE = auto()
-    VIEW = auto()
 
 
 class Application:
@@ -45,7 +44,6 @@ class Application:
             "orbit_right": control(Actions.ORBIT, "right"),
             "orbit_up": control(Actions.ORBIT, "up"),
             "orbit_down": control(Actions.ORBIT, "down"),
-            "switch_view": control(Actions.VIEW, "switch"),
             "front": control(Actions.ROTATE, "front"),
             "back": control(Actions.ROTATE, "back"),
             "top": control(Actions.ROTATE, "top"),
@@ -147,8 +145,6 @@ class Application:
                             if self.config["controls"]["input_type"] == "auto":  # see config for input type details
                                 force = self.config["controls"].getboolean("do_instant")
                                 self.try_execute(force=force)
-                        elif action.action == Actions.VIEW:
-                            pass  # toggle view between inside and outside here
                     elif val.is_sequence and val.code == 343:
                         self.try_execute(force=True)
 
