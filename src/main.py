@@ -46,8 +46,8 @@ class Application:
             "orbit_down": control(Actions.ORBIT, "down"),
             "front": control(Actions.ROTATE, "front"),
             "back": control(Actions.ROTATE, "back"),
-            "top": control(Actions.ROTATE, "top"),
-            "bottom": control(Actions.ROTATE, "bottom"),
+            "top": control(Actions.ROTATE, "up"),
+            "bottom": control(Actions.ROTATE, "down"),
             "left": control(Actions.ROTATE, "left"),
             "right": control(Actions.ROTATE, "right"),
             "anti_clockwise": control(Actions.ROTATE, "anti_clockwise"),
@@ -59,7 +59,7 @@ class Application:
         self.keymap = {}
         config_controls = self.config["controls"]
         for k, v in key_groups.items():
-            for key in config_controls[k].split('¦'):
+            for key in config_controls[k].split('|'):
                 self.keymap[key] = v
 
         # initialise cube from config here i.e. self.cube = Cube.from_config(...) or similar
@@ -73,7 +73,8 @@ class Application:
             print(self.term.on_color_rgb(*rgb_colour))
         print(self.term.clear)
 
-        self.commands = []
+        self.last_command = ''
+        self.parsed = []
 
     @staticmethod
     def hex_to_rgb(colour_string: str) -> Optional[tuple]:
@@ -97,36 +98,33 @@ class Application:
         # draw cube here
         # draw current commands here
         pass
-
-    def try_execute(self, *, force: bool = False) -> None:
-        """Try to execute the current commands."""
-        # parse the commands
-        parsed = []
+    def try_parse(self, action, *, force: bool = False) -> None:
+        """Try to parse the current commands."""
+        # parsing could be improved by using enums and making 'command' static if we have time
         command = namedtuple("Command", "face modifier")
-        modifiers = ("anti_clockwise", "one_eighty")
-        for i, action in enumerate(self.commands):
+        modifiers = ("anti_clockwise", "one_eighty", '')  # the empty string is for the initial value in __init__
+
+        # parse the commands
+        if force:
+            # if we are forcing it, we don't care what the last action is, and modifiers don't matter
+            if action not in modifiers:
+                self.parsed.append(command(action, None))
+        elif self.last_command not in modifiers:
+            # if the last action is a face (and force is false), we are either adding a face or a modified face
             if action in modifiers:
-                # modifiers are caught by the previous action, so skip them
-                # this does, however, mean multiple modifiers in a row are ignored
-                continue
-            elif i == len(self.commands) - 1:
-                # only process an ambiguous last command if force is true
-                if force:
-                    parsed.append(command(action, None))
-            elif self.commands[i + 1] not in modifiers:
-                parsed.append(command(action, None))
+                self.parsed.append(command(self.last_command, action))
             else:
-                # if there's a modifier after it, add it with the modifier as well
-                parsed.append(command(action, self.commands[i + 1]))
+                self.parsed.append(command(self.last_command, None))
+
+        self.last_command = action
+
+    def execute_commands(self) -> None:
+        """Execute the current commands."""
+        for command in self.parsed:
+            pass  # call cube's rotate/twist function here with modifier or resolve the modifier if necessary
 
         # remove executed commands
-        if force or self.commands[-1] in modifiers:
-            self.commands = []
-        else:
-            self.commands = [self.commands[-1]]
-
-        for command in parsed:
-            pass  # call cube's rotate/twist function here with modifier or resolve the modifier if necessary
+        self.parsed = []
 
     def run(self) -> None:
         """Run the main loop, handling key presses and rendering the scene."""
@@ -141,12 +139,17 @@ class Application:
                         if action.action == Actions.ORBIT:
                             pass  # change view angle here
                         elif action.action == Actions.ROTATE:
-                            self.commands.append(action.param)
+                            # if there is time, refactoring the control scheme to accept combos for modifiers would be
+                            # good, e.g. SHIFT + FACE = ANTI CLOCKWISE etc.
                             if self.config["controls"]["input_type"] == "auto":  # see config for input type details
                                 force = self.config["controls"].getboolean("do_instant")
-                                self.try_execute(force=force)
+                                self.try_parse(action.param, force=force)
+                                self.execute_commands()
+                            else:
+                                self.try_parse(action.param)
                     elif val.is_sequence and val.code == 343:
-                        self.try_execute(force=True)
+                        self.execute_commands()
+                    # if we have time, adding backspace to remove a command or undo would be useful
 
                     self.update_screen()
                     val = self.term.inkey()
